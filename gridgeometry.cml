@@ -1,0 +1,1297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html>
+<head>
+  <style type="text/css">
+    @media print {
+      body { }
+      p.img { text-align: center; page-break-inside: avoid }
+      img.CC { display: inline }
+    }
+    @media screen {
+      body { max-width: 800px; margin: auto }
+      p.img { text-align: center }
+      img.CC { display: inline }
+    }
+    p.date {
+      font-size: smaller;
+      margin: 0;
+    }
+    p.versionHistory {
+      color: gray
+    }
+    p.versionHistory a {
+      color: gray
+    }
+    p.ref {
+      text-indent: -2em;
+      padding-left: 2em;
+    }
+  </style>
+
+  <!-- PDFjs code (more at the end of the document) -->
+  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+
+</head>
+<body>
+  <h1>A Geometry Engine Interface for 'grid'</h1>
+  <p>
+    <span style="font-style: italic">by Paul Murrell</span>
+    <a href="http://orcid.org"><img alt="" src="https://www.stat.auckland.ac.nz/~paul/ORCID/ORCiD.png" style="width: 16px; height: 16px; vertical-align: middle" /></a> <span style="font-family: mono; font-size: small"><a href="http://orcid.org/0000-0002-3224-8858">http://orcid.org/0000-0002-3224-8858</a></span>
+  </p>
+  <p class="date">
+    Version 1:
+    <rcode echo="FALSE" results="asis">
+cat(format(Sys.Date(), "%A %d %B %Y"))
+    </rcode>
+  </p>
+
+  <rcode id="init" echo="FALSE" message="FALSE" results="hide">
+opts_chunk$set(comment=" ", tidy=FALSE)
+options(width=100)
+## For wonky desktop set up
+options(bitmapType="cairo")
+  </rcode>
+  <rcode echo="FALSE">
+    library(grid)
+  </rcode>
+
+  <hr/>
+  <p>
+    <a rel="license"
+    href="http://creativecommons.org/licenses/by/4.0/"><img class="CC"
+    alt="Creative Commons License" style="border-width:0"
+    src="https://i.creativecommons.org/l/by/4.0/88x31.png"/></a><br/><span
+    xmlns:dct="http://purl.org/dc/terms/"
+    property="dct:title">This document</span>
+    by <span xmlns:cc="http://creativecommons.org/ns#"
+    property="cc:attributionName">Paul
+    Murrell</span> is licensed under a <a rel="license"
+    href="http://creativecommons.org/licenses/by/4.0/">Creative
+    Commons Attribution 4.0 International License</a>.
+  </p>
+  <hr/>
+  <p>
+    This report describes a new function in 'grid' called
+    <code>grobCoords</code> and a new package called 'gridGeometry' 
+    that combines <code>grobCoords</code> with the 'polyclip'
+    package to provide a geometry engine interface for 'grid'.
+  </p>
+
+  <toc/>
+
+  <h2><a name="intro">Introduction</a></h2>
+  <p>
+    The 'grid' package for R (<a href="#R"/>) provides some useful tools,
+    such as units, viewports, and layouts, that make it easy to
+    express certain arrangements of output when drawing
+    (e.g., 'ggplot2' plots; <a href="#pkg:ggplot2"/>).
+    However, there are many graphical results that are difficult 
+    to produce with 'grid'.  A simple example is drawing an edge 
+    between two nodes on a graph or diagram, as shown below.
+  </p>
+  <rcode echo="FALSE">
+library(gridGeometry)
+  </rcode>
+  <rcode id="easy-shapes" echo="FALSE">
+Ax <- .3
+Ay <- .5
+Bx <- .7
+By <- .5
+node1 <- rectGrob(Ax, Ay, .2, .2,
+                  gp=gpar(lwd=5, fill=NA))
+node2 <- circleGrob(Bx, By, r=.1,
+                    gp=gpar(lwd=5, fill=NA))
+line <- bezierGrob(c(Ax, .4, .6, Bx),
+                   c(Ay, .2, .2, By),
+                   gp=gpar(col=rgb(0,0,0,.2), lwd=5))
+  </rcode>
+  <rcode id="hard-shape" echo="FALSE">
+p <- polyclipGrob(line, gList(node1, node2), op="minus",
+                  gp=gpar(lwd=5))
+  </rcode>
+  <rcode id="diagram" eval="FALSE" echo="FALSE">
+grid.draw(node1)
+grid.text("A", .3, .5, gp=gpar(fontface="bold", cex=1.5))
+grid.draw(node2)
+grid.text("B", .7, .5, gp=gpar(fontface="bold", cex=1.5))
+grid.draw(p)
+  </rcode>
+  <rcode echo="FALSE" fig.width="6" fig.height="3">
+grid.newpage()
+pushViewport(viewport(width=.9, height=.9))
+<<diagram>>
+  </rcode>
+  <p>
+    To be more specific, the line between the two nodes in the above
+    diagram is a Bezier curve that would originate and terminate at the centre
+    of the two nodes, if it were not cut off at the node boundaries.
+    This means that 'grid' functions like <code>grobX</code> and
+    <code>grobY</code> are no use, because it is difficult to 
+    determine the angle of incidence of the lines to the nodes.
+    We could use <code>grid.bezier</code>, starting at the 
+    boundaries of the nodes, but that would produce a different curve entirely,
+    and one that would not be aiming at the node centres.
+  </p>
+  <p>
+    Another detail about the diagram is that the background of the nodes 
+    is transparent (as shown below).  This means that the standard R graphics
+    "painters model" cannot help us out;  we cannot just draw a Bezier
+    curve that starts and ends at the node centres and then draw 
+    opaque nodes
+    over the top to obscure the intersection of the curve with the nodes.
+  </p>
+  <rcode echo="FALSE" fig.width="6" fig.height="3">
+library(jpeg)
+img <- readJPEG("geograph-1348121-by-Mick-Garratt.jpg")
+grid.newpage()
+grid.raster(img)
+grid.rect(gp=gpar(col=NA, fill=rgb(1,1,1,.5)))
+pushViewport(viewport(width=.9, height=.9))
+<<diagram>>
+  </rcode>
+  <p style="font-size: smaller">
+    The photo in the image above is &#xa9; <a href="https://www.geograph.org.uk/profile/343">Mick Garratt</a>
+    (<a href="https://www.geograph.org.uk/photo/1348121">Loch na Leitreach</a>, Sunday,  7 June, 2009,
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>).
+    It is read into R using the 'jpeg' package (<a href="#pkg:jpeg"/>)
+  </p>
+
+  <p>
+    One way to produce the diagram above is using 
+    "constructive geometry", where we create a shape that is 
+    difficult to describe
+    by combining shapes that are easier to describe.
+    In the example above, the curve between the nodes is difficult
+    to describe, but a curve between the node centres is easy
+    and the nodes themselves are easy.
+    By "subtracting" the nodes from a curve between the node centres
+    we can easily obtain the curve between the nodes.
+    This document describes a new package for R called 'gridGeometry' 
+    (<a href="#pkg:gridgeometry"/>)
+    that provides tools for performing this sort of constructive 
+    geometry with 'grid' graphics.
+  </p>
+  <rcode>
+library(gridGeometry)
+  </rcode>
+  <p>
+    The following code uses standard 'grid' functions to describe
+    two nodes (a rectangle and a circle) at locations A and B and a
+    Bezier curve from A to B.
+  </p>
+  <rcode>
+<<easy-shapes>>
+  </rcode>
+  <p>
+    The <code>polyclipGrob</code> function from the 'gridGeometry'
+    package can be used to create a new grob that is the Bezier
+    curve "minus" the two nodes.
+  </p>
+  <rcode>
+<<hard-shape>>
+  </rcode>
+  <p>
+    The diagram below shows the two nodes, the original Bezier curve
+    (in grey), and the constructed Bezier curve
+    (the grey curve minus the nodes).    
+  </p>
+  <rcode echo="FALSE" fig.width="6" fig.height="3">
+grid.draw(line)
+grid.draw(node1)
+grid.draw(node2)
+grid.draw(p)
+  </rcode>
+  <p>
+    The next section describes the 'gridGeometry' package in more detail
+    and later sections provide some more examples of its use.
+  </p>
+  <h2><a name="gridgeometry">The 'gridGeometry' package</a></h2>
+  <p>
+    The 'gridGeometry' package provides functions for combining or
+    transforming 'grid' grobs to create new grobs.
+  </p>
+  <p>
+    The <code>grid.polyclip</code> function, and the <code>polyclipGrob</code>
+    function, allow us to combine grobs using operations supported by the
+    <code>polyclip</code> function from the 'polyclip' package 
+    (<a href="#pkg:polyclip"/>)
+    (which is an R interface to the C Clipper library; <a href="#clipper"/>).
+  </p>
+  <p>
+    The following code demonstrates the four <code>polyclip</code> 
+    operations:  intersection, union, minus, and xor.
+    In each case, we combine an overlapping rectangle and circle 
+    (both drawn with thick black outlines) and the result is drawn
+    as a filled grey shape with thick black outline.
+  </p>
+  <rcode>
+r <- rectGrob(.4, .4, .4, .4, gp=gpar(lwd=5))
+c <- circleGrob(.6, .6, r=.2, gp=gpar(lwd=5))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(r)
+grid.draw(c)
+grid.polyclip(r, c, op="intersection", 
+              gp=gpar(lwd=5, fill="grey"))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(r)
+grid.draw(c)
+grid.polyclip(r, c, op="union", 
+              gp=gpar(lwd=5, fill="grey"))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(r)
+grid.draw(c)
+grid.polyclip(r, c, op="minus", 
+              gp=gpar(lwd=5, fill="grey"))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(r)
+grid.draw(c)
+grid.polyclip(r, c, op="xor", 
+              gp=gpar(lwd=5, fill="grey"))
+  </rcode>
+  <p>
+    The 'gridGeometry' package is based on a fork 
+    of the 'polyclip' package that allows these operations to
+    occur on (open) lines as well as (closed) polygons.
+    The following code demonstrates the four <code>polyclip</code> 
+    operations when combining a Bezier curve with an overlapping circle.
+    In each case, the curve and the circle are drawn with a thin black
+    line and the result is drawn with a thick black line.
+  </p>
+  <rcode>
+l <- bezierGrob(c(.2, .4, .6, .8),
+                c(.2, .8, .8, .2))
+c <- circleGrob(.6, .6, r=.2)
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(l)
+grid.draw(c)
+grid.polyclip(l, c, op="intersection",
+              gp=gpar(lwd=5))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(l)
+grid.draw(c)
+grid.polyclip(l, c, op="union",
+              gp=gpar(lwd=5))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(l)
+grid.draw(c)
+grid.polyclip(l, c, op="minus",
+              gp=gpar(lwd=5))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(l)
+grid.draw(c)
+grid.polyclip(l, c, op="xor",
+              gp=gpar(lwd=5))
+  </rcode>
+  <p>
+    The other high-level functions in 'gridGeometry' are
+    <code>grid.trim</code> and <code>trimGrob</code>.
+    These allow us to extract subsets of a line by 
+    specifying <code>from</code> and <code>to</code>
+    arguments.  The following code demonstrates its use by
+    creating a variety of subsets of a Bezier curve.
+    In each case, the complete curve is drawn as a thick grey line
+    and the subsets are drawn as thick black lines.
+  </p>
+  <rcode>
+l <- bezierGrob(c(.2, .4, .6, .8),
+                c(.2, .8, .8, .2),
+                gp=gpar(col="grey", lwd=5))
+  </rcode>
+  <p>
+    The <code>from</code> and <code>to</code> arguments
+    specify proportions of the 
+    length of the line. In the example below, we create a subset
+    that starts 20% of the way along the curve and finishes
+    80% of the way along the curve.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(l)
+grid.trim(l, .2, .8, gp=gpar(lwd=5))
+  </rcode>
+  <p>
+    Both <code>from</code> and <code>to</code>
+    can be vectors, in which case multiple subsets are created.  
+    In the example below, we generate a subset from 20% to 40% and
+    another subset from 60% to 80% of the way along the curve.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(l)
+grid.trim(l, c(.2, .6), c(.4, .8), gp=gpar(lwd=5))
+  </rcode>
+  <p>
+    Both <code>from</code> and <code>to</code>
+    can also be negative, in which case the
+    distance is measured from the end of the line.
+    In the example below, we create a subset that starts 20% of the 
+    way along the curve and finishes 10% from the end of the curve.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(l)
+grid.trim(l, .2, -.1, gp=gpar(lwd=5))
+  </rcode>
+  <p>
+    Both <code>from</code> and <code>to</code>
+    can be 'grid' units.  In the example below, we create a subset
+    that starts 5mm along the curve and finishes 1in from the end 
+    of the curve.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(l)
+grid.trim(l, unit(5, "mm"), unit(-1, "in"), gp=gpar(lwd=5))
+  </rcode>
+  <p>
+    When <code>from</code> and <code>to</code> are units,
+    the "npc" coordinate system represents 0 to 1 along the line.
+    This allows distances along the line to be specified
+    as a combination of a proportions and units.
+    In the example below, we create a subset that starts 20% of the
+    way along the curve and finishes 5mm past 50% of the way 
+    along the curve.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(l)
+grid.trim(l, .2, unit(.5, "npc") + unit(5, "mm"), gp=gpar(lwd=5))
+  </rcode>
+  <p>
+    There is also a <code>rep</code> argument that can be used to repeat 
+    <code>from</code> and <code>to</code> until the end of the 
+    line.  The values are repeated by adding the <code>from</code> 
+    and <code>to</code> values onto the largest <code>to</code> value.
+    In other words, the line that remains <em>after</em> the last 
+    <code>to</code> value is then used to generate more subsets using the
+    original <code>from</code> and <code>to</code> values, and that process is
+    repeated until there is no line left.
+    In the example below, we create a subset 
+    that starts at 10% and finishes at 20%, then we create a subset
+    that starts at 30% and finishes at 40%, and so on until a final
+    subset that starts at 90% and finishes at 100%.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(l)
+grid.trim(l, .1, .2, rep=TRUE, gp=gpar(lwd=5))
+  </rcode>  
+
+  <h2><a name="grobCoords">Grob coordinates</a></h2>
+  <p>
+    The high-level functions like
+    <code>grid.polyclip</code> begin with 'grid' grobs
+    and generate 'grid' grobs as the result (and draw them).
+    In between, they have to convert 'grid' grobs
+    into a set of coordinates that can be fed to 
+    <code>polyclip</code> from the 'polyclip' package
+    and then convert the result from <code>polyclip</code>
+    back to a 'grid' grob.  This section and the next section
+    look at some functions that allow us to perform these
+    conversions directly. This is useful if we want 
+    more control over the conversions between grobs and coordinates
+    and if we want to perform further transformations on coordinates
+    before converting back to grobs.
+  </p>
+  <p>
+    The conversion from a grob to a set of coordinates
+    is made possible by the new function <code>grobCoords</code>
+    in the 'grid' package. This
+    function converts a grob into a list containing lists of x/y coordinates,
+    with all values in inches relative to the current 'grid' viewport.
+    There is also a <code>closed</code> argument to indicate whether
+    we are looking for the coordinates of a closed shape or an open shape.
+    This is straightforward for something like a single line.
+    In the example below, we have a grob that specifies a line from
+    the point (2in, 2in) to (3in, 3in) within the current viewport.
+    Converting that to a set of coordinates in inches within the
+    current viewport produces the expected result.
+  </p>
+  <rcode fig.keep="none">
+l <- linesGrob(unit(2:3, "in"), unit(2:3, "in"))
+lcoords <- grobCoords(l, closed=FALSE)
+lcoords
+  </rcode>
+  <p>
+    However, some grobs generate many more coordinates.
+    For example, in the case of a circle, the grob contains
+    only centre and radius information, but the grob coordinates
+    is a list of explicit points on the circumference of the circle.
+    In the example below, we describe a circle centred at (2in, 2in)
+    with a radius of 1in.  The set of coordinates in inches within the
+    current viewport consists of 100 (x, y) locations.
+    (There is a argument <code>n</code> to control how many 
+    coordinates are generated for a circle).
+  </p>
+  <rcode fig.keep="none">
+c <- circleGrob(2, 2, 1, default.units="in")
+ccoords <- grobCoords(c, closed=TRUE)    
+ccoords
+  </rcode>
+  <p>
+    It is also possible for a single 'grid' grob to describe 
+    several shapes.  In this case, the set of coordinates is a list
+    with more than one component.  In the example below,
+    the grob describes two straight lines, one from (1in, 1in)
+    to (2in, 2in) and one from (3in, 3in) to (4in, 4in).
+    The result from <code>grobCoords</code> is a list of two
+    sets of (x, y) coordinates.
+  </p>
+  <rcode fig.keep="none">
+p <- polylineGrob(1:4, 1:4, default.units="in", id=rep(1:2, each=2))
+grobCoords(p, closed=FALSE)    
+  </rcode>
+  <p>
+    If we ask an open shape for closed coordinates, or a closed
+    shape for open coordinates, we get an empty
+    result.  In the example below, we are asking an (open) line segment
+    for closed coordinates.
+  </p>
+  <rcode fig.keep="none">
+grobCoords(l, closed=TRUE)
+isEmptyCoords(grobCoords(l, closed=TRUE))
+  </rcode>  
+  <p>
+    The reason for distinguishing between open and closed coordinates
+    is because it is possible to create a 'grid' grob that consists
+    of both open and closed components.
+    In the example below, we create a gTree grob that has an (open)
+    line and a (closed) circle as its children.
+    When we ask this gTree for closed coordinates, we get an empty
+    result from the line, but a full set of coordinates from the circle.
+  </p>
+  <rcode fig.keep="none">
+gt <- gTree(children=gList(l, c))
+grobCoords(gt, closed=TRUE)
+  </rcode>  
+  <p>
+    If we ask the gTree for open coordinates, we get coordinates from the line
+    and an empty result from the circle.
+  </p>
+  <rcode fig.keep="none">
+grobCoords(gt, closed=FALSE)
+  </rcode>  
+  <p>
+    Once we have grob coordinates, we can call functions like
+    <code>polyclip</code> from the 'polyclip' package to
+    combine the coordinates.  The result is a new set of coordinates.
+    In the example below, we intersect the line with the circle and the result
+    is a truncated line (up to the edge of the circle).
+    The <code>closed</code> argument (which has been added in the
+    fork of the 'polyclip' package) tells <code>polyclip</code> whether
+    its <em>first</em> argument is open or closed (<code>polyclip</code>
+    requires the second argument to always be a closed shape).
+  </p>
+  <rcode>
+polyclip(lcoords, ccoords, closed=FALSE)
+  </rcode>
+  <p>
+    We can also use a set of coordinates in other calculations.
+    For example, the following code draws a variable-width line
+    around the circumference of the circle (using the 'vwline'
+    package; <a href="#murrell-vwline-2017"/>, <a href="#pkg:vwline"/>).
+    The value of <code>grobCoords</code> here is to convert 
+    a circle specification into (essentially) 
+    a series of straight line segments,
+    which we can then use with the <code>grid.vwcurve</code>
+    function to draw a variable-width line.
+  </p>
+  <rcode fig.width="4" fig.height="4">
+library(vwline)
+cx <- ccoords[[1]]$x
+cy <- ccoords[[1]]$y
+grid.vwcurve(cx, cy, default.units="in",
+             w=seq(0, 1, length.out=length(cx)))
+  </rcode>
+  <p>
+    The 'gridGeometry' package also defines a generic version
+    of the <code>polyclip</code> function, with 
+    <code>polyclip::polyclip</code> as the default and a
+    new method for 'grid' grobs.  This means that
+    we can generate coordinates for a combination of grobs directly.
+    The following code sends <code>polyclip</code> the original
+    grobs rather than their coordinates.  The result is still
+    a set of coordinates.
+  </p>
+  <rcode fig.keep="none">
+polyclip(l, c, closed=FALSE)
+  </rcode>  
+  <p>
+    There is also a <code>polyclip</code> method for gPaths, so that
+    it is possible to refer by name to grobs that have already been drawn.
+    The following code demonstrates this by drawing a line named 
+    "l" and a circle named "c"
+    and then calling polyclip to produce coordinates for the 
+    intersection of the grobs named "l" and "c".
+  </p>
+  <rcode fig.keep="none">
+grid.lines(unit(2:3, "in"), unit(2:3, "in"), name="l")
+grid.circle(2, 2, 1, default.units="in", name="c")
+polyclip("l", "c", closed=FALSE)
+  </rcode>  
+  <p>
+    There is also a low-level function that underlies the 
+    <code>grid.trim</code> and
+    <code>trimGrob</code> functions.  The <code>trim</code> function
+    takes either a grob, or a set of coordinates, and
+    generates a new set of coordinates, in this case representing
+    one or more subsets of the original grob coordinates.
+    For example, in the code below, we generate an X-spline grob that
+    starts at (0in, 0in), ends at (2in, 01in) and passes through 
+    (1in, 1in) and then we
+    call <code>trim</code> to calculate the coordinates of two
+    subsets of the X-spline curve:  the first half of the curve
+    and the last half of the curve.
+  </p>
+  <rcode>
+xg <- xsplineGrob(0:2, c(0, 1, 0), default.units="in", shape=-1)
+  </rcode>
+  <rcode results="hide" fig.width="2" fig.height="2" fig.keep="none">
+xcoords <- trim(xg, from=0:1/2, to=1:2/2)    
+xcoords
+  </rcode>
+  <rcode echo="FALSE">
+lapply(xcoords, 
+       function(x) { lapply(x, round, 3) })
+  </rcode>
+  <p>
+    The following code draws the two halves of the curve with
+    different line widths.
+  </p>
+  <rcode fig.width="3" fig.height="3">
+pushViewport(viewport(width=2/3, height=2/3))
+grid.lines(xcoords[[1]]$x, xcoords[[1]]$y, default.units="in",
+           gp=gpar(lwd=3, lineend="butt"))
+grid.lines(xcoords[[2]]$x, xcoords[[2]]$y, default.units="in",
+           gp=gpar(lwd=10, lineend="butt"))
+  </rcode>
+  <h2><a name="xyList">Grobs from coordinates</a></h2>
+  <p>
+    If we have worked directly in the world of grob coordinates,
+    using functions from the previous section, we usually
+    want to get back to the world of grobs, so that we
+    can draw the final result.
+  </p>
+  <p>
+    We have seen a couple of examples of drawing shapes from 
+    coordinates by calling 'grid' functions and taking into
+    account that the coordinates in are inches.
+    The 'gridGeometry' package provides several convenience functions
+    that make this job a little less work:
+    <code>xyListLine</code>, <code>xyListPath</code> and
+    <code>xyListPolygon</code>.
+  </p>
+  <p>
+    The main benefit of these functions is that they automatically
+    assume inches as the coordinate system and they automatically
+    handle multiple shapes.  For example, in the following code
+    we subtract a
+    thin rectangle from a circle using <code>polyclip</code>
+    directly, so the result is a set of coordinates.
+  </p>
+  <rcode fig.width="4" fig.height="4" fig.keep="none">
+coords <- polyclip(c, rectGrob(width=.2), op="minus")
+coords
+  </rcode>
+  <p>
+    The <code>xyListPolygon</code> function
+    automatically copes with the fact that the result is
+    two separate shapes and generates a polygon grob that we can draw.
+  </p>
+  <rcode fig.width="4" fig.height="4">
+grid.draw(xyListPolygon(coords,
+                        gp=gpar(lwd=5, fill="grey")))
+  </rcode>
+  <p>
+    It is important to note that a call to the <code>grobCoords</code> 
+    function is when grob coordinates get converted to inches
+    within the current 'grid' viewport.  This means that the coordinates
+    that are generated are relative to the viewport in effect
+    when <code>grobCoords</code> is called.
+  </p>
+  <p>
+    In the code below, we generate a rectangle grob and call
+    <code>grobCoords</code> to calculate its coordinates.
+    We then draw the rectangle grob and a polygon based on
+    its coordinates, in the same viewport that was in effect 
+    when we calculated the coordinates, so the rectangle (grey) 
+    and the polygon (dotted black) match up.
+  </p>
+  <rcode id="step1" eval="FALSE">
+r <- rectGrob(width=.8, height=.8, gp=gpar(lwd=5, col="grey"))
+coords <- grobCoords(r, closed=TRUE)
+grid.draw(r)
+grid.draw(xyListPolygon(coords,
+                        gp=gpar(lwd=5, lty="dotted")))    
+  </rcode>
+  <rcode echo="FALSE" fig.width="3" fig.height="3" dev.args="list(bg='transparent')">
+<<step1>>
+  </rcode>
+  <p>
+    Next, we push a viewport (in the central quarter of the image)
+    and draw the grob and the polygon within this viewport.  This is
+    not the viewport that the coordinates were calculated within,
+    so the polygon (red dotted) does not match the rectangle (inner grey).
+  </p>
+  <rcode id="step2" eval="FALSE">
+pushViewport(viewport(width=.5, height=.5))
+grid.draw(r)
+grid.draw(xyListPolygon(coords,
+                        gp=gpar(lwd=5, lty="dotted", col="red")))
+  </rcode>
+  <rcode echo="FALSE" fig.width="3" fig.height="3" dev.args="list(bg='transparent')">
+<<step1>>
+<<step2>>
+  </rcode>
+  <p>
+    Finally, we call <code>grobCoords</code> again, this time within
+    the new viewport, and now the rectangle (inner grey) and the
+    polygon (dotted blue) match up again.
+  </p>
+  <rcode id="step3" eval="FALSE">
+grid.draw(xyListPolygon(grobCoords(r, closed=TRUE),
+                        gp=gpar(lwd=5, lty="dotted", col="blue")))
+  </rcode>
+  <rcode echo="FALSE" fig.width="3" fig.height="3" dev.args="list(bg='transparent')">
+<<step1>>
+<<step2>>
+<<step3>>
+  </rcode>
+  <p>
+    On the other hand, the <code>grobCoords</code> function automatically
+    takes into account any <code>vp</code> setting (and for gTrees any 
+    <code>childrenvp</code> settings).
+    For example, in the following code we create a rectangle grob
+    with a <code>vp</code> argument that means that the rectangle
+    will be drawn in the central quarter of the image.
+    If we draw the rectangle (grey) and call <code>grobCoords</code>
+    and draw a polygon from the resulting coordinates (dotted black)
+    in the same viewport, we get a matching result.
+  </p>
+  <rcode fig.width="3" fig.height="3" dev.args="list(bg='transparent')">
+r <- rectGrob(width=.8, height=.8, 
+              gp=gpar(lwd=5, col="grey"),
+              vp=viewport(width=.5, height=.5))
+grid.draw(r)
+grid.draw(xyListPolygon(grobCoords(r, closed=TRUE),
+                        gp=gpar(lwd=5, lty="dotted")))
+  </rcode>
+  <p>
+    It is also important to note that the coordinates generated by
+    <code>grobCoords</code> are "neutral" in the sense that they
+    do not retain any information about whether they were generated
+    from a closed or open shape, or any details like fill rules for
+    more complex shapes.  This means that we can impose
+    semantics on the coordinates that are different from the 
+    semantics of the original grob.  As an example, consider the
+    following lines grob.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+lg <- linesGrob(c(.2, .2, .8, .8, .4, .6),
+                c(.2, .8, .8, .2, .6, .6),
+                gp=gpar(lwd=3))
+grid.draw(lg)
+  </rcode>
+  <p>
+    We can generate coordinates from this line and then 
+    a grob from the coordinates and get a filled shape.
+    We must specify <code>closed=FALSE</code> for the call to
+    <code>grobCoords</code>
+    or we will get an empty result, but once we have coordinates
+    we can use them however we wish.  In this case, by passing
+    the coordinates to the <code>xyListPath</code> function, we treat
+    the coordinates as a closed path shape.
+  </p>
+  <rcode fig.width="2" fig.height="2">
+lgcoords <- grobCoords(lg, closed=FALSE)
+lgpath <- xyListPath(lgcoords, rule="evenodd", gp=gpar(fill="black"))
+grid.draw(lgpath)
+  </rcode>
+  <p>
+    It is also possible
+    to dictate how coordinates are interpreted
+    when we call the <code>polyclip</code> function.
+    The following code treats the line coordinates as a closed shape
+    to intersect those coordinates with the coordinates for a circle.
+    We specify <code>closed=TRUE</code> in the call to
+    <code>polyclip</code> so that it interprets the coordinates
+    for the line as a closed shape.
+  </p>
+  <rcode fig.width="2" fig.height="2" fig.keep="none">
+coords <- polyclip(lgcoords, 
+                   grobCoords(circleGrob(.5, .5, .3), closed=TRUE),
+                   closed=TRUE,
+                   fillA="evenodd")
+  </rcode>
+  <p>
+    The result of <code>polyclip</code> is a new set of coordinates
+    and we can use them to draw an open line ...
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(xyListLine(coords, gp=gpar(lwd=3)))
+  </rcode>
+  <p>
+    ... or a closed path ...
+  </p>
+  <rcode fig.width="2" fig.height="2">
+grid.draw(xyListPath(coords, gp=gpar(fill="black")))
+  </rcode>
+  
+  <h2><a name="quirks">Grobs versus coordinates</a></h2>
+  <p>
+    This section looks at some important differences between 
+    'grid' grobs and sets of coordinates.
+  </p>
+  <p>
+    The <code>grobCoords</code> function generates points on the
+    boundary of a 'grid' grob based on the basic description of the
+    shape of the grob.
+    This does not take into account things like
+    the colour of the grob, whether the grob is filled in or not,
+    or, more importantly, the thickness of the line used to draw
+    the boundary of the grob.
+  </p>
+  <p>
+    The following code demonstrates this difference by subtracting
+    a rectangle from a circle, both of which are drawn with thick
+    lines.  The resulting intersection is drawn as a thin red line.
+    Notice that only the basic circle shape has been subtracted from
+    the rectangle, ignoring the thickness of the circle border
+    and ignoring the thickness of the rectangle border.
+  </p>
+  <rcode>
+r <- rectGrob(.4, .4, .4, .4, gp=gpar(lwd=10))
+c <- circleGrob(.6, .6, r=.2, gp=gpar(lwd=10))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(r)
+grid.draw(c)
+grid.polyclip(r, c, op="minus", 
+              gp=gpar(col="red"))
+  </rcode>
+  <p>
+    If we draw the result with the same line thickness as the circle
+    and the rectangle, the result looks even worse (it looks like
+    only the interior of the circle has been removed from the
+    rectangle) ...
+  </p>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(r)
+grid.draw(c)
+grid.polyclip(r, c, op="minus", 
+              gp=gpar(col="red", lwd=10))
+  </rcode>
+  <p>
+    If we actually want to subtract the outline of the drawn border of the
+    circle, we need coordinates that describe that outline.
+    One way to do that is with the 'vwline' package, which generates
+    a polygon or path to represent a line (potentially with a variable width).
+  </p>
+  <p>
+    The following code calls <code>grobCoords</code> to 
+    get the coordinates of the rectangle and the circle.  We then generate
+    a variable-width line (with a constant width) based on the circle
+    coordinates.  Next, we generate the coordinates for that variable-width
+    line (which has coordinates for both the inside and outside of the
+    circle border).  Finally, we generate a polygon by subtracting the
+    second set of coordinates for the variable-width line from 
+    the rectangle coordinates. 
+  </p>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')" fig.keep="none">
+rc <- grobCoords(r, closed=TRUE)
+cc <- grobCoords(c, closed=TRUE)[[1]]
+vwc <- vwcurveGrob(cc$x, cc$y, default.units="in", w=unit(10/96, "in"),
+                   open=FALSE)
+vwcc <- grobCoords(vwc, closed=TRUE)
+result <- xyListPolygon(polyclip(rc, vwcc[2], "minus"), gp=gpar(col="green"))
+  </rcode>
+  <p>
+    The figure below shows the original rectangle, the variable-width line
+    and result of the subtraction (in green).
+    Many other variations on this result are possible
+    by playing directly with coordinates of grobs.
+  </p>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(r)
+grid.draw(vwc)
+grid.draw(result)    
+  </rcode>
+
+<!--
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+rc <- grobCoords(r, closed=TRUE)[[1]]
+vwr <- vwcurveGrob(rc$x, rc$y, default.units="in", w=unit(sqrt(50), "pt"),
+                   open=FALSE)
+grid.draw(vwr)
+cc <- grobCoords(c, closed=TRUE)[[1]]
+vwc <- vwcurveGrob(cc$x, cc$y, default.units="in", w=unit(5, "pt"),
+                   open=FALSE)
+grid.draw(vwc)
+grid.polyclip(vwr, vwc, "minus", gp=gpar(col=NA, fill="red"))
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(vwr)
+vwe <- edgePoints(vwc, d=seq(0, 1, length.out=100))$right
+grid.draw(vwc)
+grid.polyclip(vwr, polygonGrob(vwe$x, vwe$y), 
+              "minus", gp=gpar(col="red", fill="red"),
+              fillB="nonzero")
+  </rcode>
+  <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')">
+grid.draw(vwr)
+grid.draw(c)
+grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
+  </rcode>
+-->
+
+  <h2><a name="examples">Examples</a></h2>
+  <p>
+    One simple application of 'gridGeometry' is to generate a
+    polygonal shape that is difficult to describe directly,
+    as in the original line between two graph nodes at the start
+    of this document.
+  </p>
+  <p>
+    The code below shows a closed-shape version of this sort of task (for a
+    fairly arbitrary shape).  The goal is a rectangle with 
+    circular holes punched in it, including semicircular holes at
+    the edges (the filled grey region below).  
+    This shape could be described explicitly as a 
+    path in 'grid', but it is much easier to describe a rectangle
+    and a series of circles and subtract the latter from the former.
+  </p>
+  <rcode fig.width="3" fig.height="3" dev.args="list(bg='transparent')">
+r <- rectGrob(width=.6, height=.4, gp=gpar(lwd=5))
+c <- circleGrob(x=1:4/5, r=unit(5, "mm"), gp=gpar(lwd=5))
+p <- polyclipGrob(r, c, op="minus", 
+                  gp=gpar(fill=rgb(0,0,0,.5), lwd=5))
+grid.draw(r)
+grid.draw(c)
+grid.draw(p)    
+  </rcode>
+
+  <p>
+    The next example shows a similar construction, but in a larger context
+    (at the risk of inviting the attention of the chart-junk police).
+    The overall plot is a 'lattice' barchart (<a href="#pkg:lattice"/>) 
+    of counts of movies
+    in different genres (<a href="#pkg:ggplot2movies"/>).  
+    We have provided a panel function
+    that, after drawing the normal bars,
+    constructs a 
+    "flim strip" shape by substracting lots of small rectangles and circles
+    from the normal bars.  
+    This demonstrates the use of a gPath as the first argument
+    to <code>grid.polyclip</code> which, by default, 
+    <em>replaces</em> the named grob with the result of the polyclip
+    operation (by default 
+    retaining the graphical parameters of the original grob).
+  </p>
+  <rcode fig.keep="last">
+library(ggplot2movies)
+counts <- apply(movies[-(1:17)], 2, sum)
+filmstrip <- function(x, y, box.width=2/3, ...) {
+    panel.barchart(x, y, box.width, ...)
+    w <- convertWidth(unit(1, "npc"), "cm", valueOnly=TRUE)
+    hsteps <- seq(-.1, w, .7)
+    hx <- rep(hsteps, length(x))
+    hy <- rep(y, each=length(hsteps))
+    holes <- rectGrob(x=unit(hx, "cm"), y=unit(hy, "native"), 
+                      width=unit(.5, "cm"), height=unit(.7, "cm"),
+                      just="left")
+    esteps <- seq(.1, w, .2)
+    ex <- rep(esteps, 2*length(x))
+    ey <- rep(c(as.numeric(y) + .4*box.width, 
+                as.numeric(y) - .4*box.width),
+              each=length(esteps))
+    edges <- circleGrob(unit(ex, "cm"), unit(ey, "native"),
+                        r=unit(.5, "mm"))
+    grid.polyclip("plot_01.barchart.rect.panel.1.1", 
+                  gList(holes, edges), "minus")
+}
+library(lattice)
+barchart(sort(counts),
+         panel=function(x, y, ...) {
+             filmstrip(x, y, ...)
+         })
+  </rcode>
+
+  <p>
+    The next example demonstrates an application of the <code>trim</code>
+    function.  To motivate the problem, we first draw a Bezier curve
+    with an arrow head with standard 'grid' functions.
+  </p>
+  <rcode fig.width="3" fig.height="3">
+x <- c(.2, .5, .5, .8)
+y <- c(.2, 0, 1, .8)
+grid.bezier(x, y, gp=gpar(lwd=5, fill=NA), 
+            arrow=arrow(angle=20, length=unit(1, "cm"), type="closed"))
+  </rcode>
+  <p>
+    There are two problems with the result above:  the arrow head
+    is drawn with the same graphical parameters as the line, so
+    it is thick with rounded corners;  and the orientation of 
+    the arrow head is based on the angle of the last straight line
+    segment in the "curve", so it looks silly (because the 
+    end of the line has high curvature).
+  </p>
+  <p>
+    We are going to improve the arrow head by drawing the curve
+    in separate parts.
+    First, we get the coordinates for the line and split those
+    into three parts: the last 10mm of the curve;
+    8mm from the end to 12mm from the end of the curve;
+    and all but the last 10mm of the curve.
+  </p>
+  <rcode fig.width="3" fig.height="3" fig.keep="none">
+bg <- bezierGrob(x, y, gp=gpar(lwd=5, col=rgb(0,0,0,.2)))
+pts <- grobCoords(bg, closed=FALSE)
+segs <- trim(pts, 
+             from=unit(c(1, -8, -10), c("npc", "mm", "mm")), 
+             to=unit(c(-10, -12, 0), c("mm", "mm", "npc")))
+  </rcode>
+  <rcode echo="FALSE" fig.width="3" fig.height="3">
+grid.draw(xyListLine(segs, 
+                       gp=gpar(col=adjustcolor(1:3, alpha=.5), 
+                               lwd=c(5, 10, 5), lineend="butt")))
+
+  </rcode>
+  <p>
+    Now we can draw most of the curve as a normal line and then
+    add a variable-width line 
+    based on the last 10mm of the curve
+    to produce an arrow head that follows the curve.
+  </p>
+  <rcode fig.width="3" fig.height="3">
+line <- xyListLine(segs[3], gp=gpar(lwd=5))
+arrow <- offsetXsplineGrob(segs[[1]]$x, segs[[1]]$y, default.units="in",
+                           shape=1,
+                           w=widthSpline(unit(c(6, 0), "mm")))
+grid.draw(line)
+grid.draw(arrow)
+  </rcode>
+  <p>
+    The following code takes this a step further and adds in a bit
+    of constructive geometry.  This time we draw all but the last
+    8mm of the curve as a normal line.  We then create two variable-width
+    lines, one based on the last 10mm of the curve as before, and a 
+    second based on the section of the curve from 8mm to 12mm from the end.
+    We make the latter variable-width line expand much faster than the
+    former (the two variable-width lines are shown in semitransparent
+    red and semitransparent blue below).
+  </p>
+  <rcode fig.width="3" fig.height="3">
+line <- xyListLine(segs[2:3], gp=gpar(lwd=5))
+arrow1 <- offsetXsplineGrob(segs[[1]]$x, segs[[1]]$y, default.units="in",
+                            shape=1,
+                            w=widthSpline(unit(c(6, 0), "mm")),
+                            gp=gpar(fill=rgb(1,0,0,.5)))
+arrow2 <- offsetXsplineGrob(segs[[2]]$x, segs[[2]]$y, default.units="in",
+                            shape=1,
+                            w=widthSpline(unit(c(12, 0), "mm")),
+                            gp=gpar(fill=rgb(0,0,1,.5)))
+grid.draw(line)
+grid.draw(arrow1)
+grid.draw(arrow2)
+  </rcode>
+  <p>
+    We construct a final arrow head by subtracting one variable-width
+    line from the other to produce a curve with a notched arrow head 
+    that follows the curve (and has nice pointy corners).
+  </p>
+  <rcode fig.width="3" fig.height="3">
+arrow <- polyclipGrob(arrow1, arrow2, "minus",
+                      gp=gpar(fill="black"))
+grid.draw(line)
+grid.draw(arrow)
+  </rcode>
+  <p>
+    That may seem like a lot of work, but because it is code-based, 
+    this approach could easily be wrapped into a function to simplify
+    reuse and enhance generality.
+  </p>
+
+<!--
+  <p>
+    This example "subtracts" a circle from a gTree consisting
+    of a rounded-rectangle and a circle.  The gTree shapes are
+    interpreted by default (by polyclip()) as a single path
+    with an even-odd fill rule (so the circle represents a hole
+    within the rounded-rect).  
+  </p>
+  <rcode fig.width="3" fig.height="3">
+g1 <- gTree(children=gList(roundrectGrob(width=.5, height=.5),
+                           circleGrob(r=.25)),
+            gp=gpar(col="red"))
+g2 <- circleGrob(.75, .75, .15, gp=gpar(col="blue", fill=NA))
+p <- polyclipGrob(g1, g2, name="p", op="minus",
+                  gp=gpar(col=rgb(0,0,0,.5), fill=rgb(0,0,0,.5), lwd=5))
+grid.draw(g1)
+grid.draw(g2)
+grid.draw(p)
+  </rcode>
+  <p>
+    The next code is a small variation where we have changed the 
+    interpretation of the gTree to use a non-zero winding rule.
+    This means that the combination of circle and rounded rect is
+    actually just the rounded rect.
+  </p>
+  <rcode fig.width="3" fig.height="3">
+g1 <- gTree(children=gList(roundrectGrob(width=.5, height=.5),
+                           circleGrob(r=.25)),
+            gp=gpar(col="red"))
+g2 <- circleGrob(.75, .75, .15, gp=gpar(col="blue", fill=NA))
+p <- polyclipGrob(g1, g2, name="p", op="minus", fillA="nonzero",
+                  gp=gpar(col=rgb(0,0,0,.5), fill=rgb(0,0,0,.5),  lwd=5))
+grid.draw(g1)
+grid.draw(g2)
+grid.draw(p)
+  </rcode>
+  <p>
+    The next code shows the difference in the result if we subtract the
+    circle from the rounded rect and the circle as separate entities.
+  </p>
+  <rcode fig.width="3" fig.height="3">
+g1a <- roundrectGrob(width=.5, height=.5, gp=gpar(col="red"))
+g1b <- circleGrob(r=.25, gp=gpar(col="red"))
+g2 <- circleGrob(.75, .75, .15, gp=gpar(col="blue", fill=NA))
+pa <- polyclipGrob(g1a, g2, name="p", op="minus",
+                   gp=gpar(col=rgb(0,0,0,.5), fill=rgb(0,0,0,.5),  lwd=5))
+pb <- polyclipGrob(g1b, g2, name="p", op="minus",
+                   gp=gpar(col=rgb(0,0,0,.5), fill=rgb(0,0,0,.5),  lwd=5))
+grid.draw(g1a)
+grid.draw(g1b)
+grid.draw(g2)
+grid.draw(pa)    
+grid.draw(pb)
+  </rcode>
+-->
+
+  <h2><a name="discussion">Discussion</a></h2>
+  <p>
+    This report has described two new graphics facilities in R.
+    One is the <code>grobCoords</code> function in the 'grid'
+    package, which can be used to convert 'grid' grobs into 
+    sets of coordinates that describe the shape of the grob.
+    The other is the 'gridGeometry' package, which provides
+    functions for combining grobs, for example, calculating the intersection
+    of two grobs.
+  </p>
+  <p>
+    It might reasonably be asked what purpose the 'gridGeometry' package is
+    really serving.  The <code>grobCoords</code> function performs the
+    conversion from grobs into coordinates and the
+    'polyclip' package does all of the hard work of
+    combining sets of coordinates.  What does 'gridGeometry' add to that?
+  </p>
+  <p>
+    The answer is, mostly, just convenience.  Most of the functions
+    in the 'gridGeometry' package are there to provide an interface
+    to the process of combining 'grid' grobs. 
+    However, the <code>grid.trim</code> function for 
+    generating subsets of lines is also a new contribution.
+  </p>
+  <p>
+    What is the value of having this convenient interface to a 
+    geometry engine?  The main idea is that this provides access to
+    a new tool.  For example, prior to having this tool, we might 
+    never have thought of turning a bar plot into a film strip.  Some
+    might argue that we should never have that thought and that that is
+    not a good thought, but the important point
+    is that new tools help us to think of new ways of doing things.
+    New tools help us to find new solutions to problems.
+  </p>
+  <h3>Related work</h3>
+  <p>
+    There are several other R packages that make use of 
+    the geometry engine that is provided by the 
+    'polyclip' package. 
+    For example, 'eulerr' (<a href="#pkg:eulerr"/>) and 
+    'SubgrPlots' (<a href="#pkg:subgrplots"/>) use 'polyclip'
+    for drawing (variations
+    of) venn diagrams. The 'maptools' package (<a href="#pkg:maptools"/>)
+    uses 'polyclip'
+    to clip map regions (when they 
+    wrap from left-edge to right-edge of map, or vice versa) and 'deldir' 
+    (<a href="#pkg:deldir"/>)
+    uses 'polyclip' for complex clipping of voronoi tesselations.
+    The 'spatstat' package (<a href="#pkg:spatstat"/>) uses 'polyclip'
+    for all sorts of things, including polygon offsets, polyline offsets, and
+    polygon intersection.  The main difference betweeen 'gridGeometry'
+    and these other packages is in how the shapes that are to be combined
+    are generated.  
+    The contribution of 'gridGeometry' (and <code>grid::grobCoords</code>)
+    is to add the ability to generate shapes
+    from 'grid' grobs (which includes anything that is drawn by 
+    packages that are built on top of 'grid').
+  </p>
+  <h3>Limitations</h3>
+  <p>
+    The usual issue of speed (or slowness) is a problem for
+    the 'gridGeometry' package.  This is not the fastest possible
+    way to perform constructive geometry.  However, in some 
+    applications and for some users, the convenience may be worth the wait.
+  </p>
+  <p>
+    Another important limitation of 'gridGeometry', or more specifically,
+    the <code>grobCoords</code> function, is that it is not 
+    (currently) possible
+    to generate a set of coordinates for all 'grid' grobs.
+    It is perhaps not surprising that raster grobs, "clip" grobs, and 
+    "null" grobs generate an empty set of coordinates, but,
+    in addition, text grobs and point grobs generate an empty set of 
+    coordinates.  These gaps may be the subject of future work.
+  </p>
+  
+  <h2><a name="requirements">Technical requirements</a></h2>
+  <p>
+    The examples and discussion in this document relate to <a
+    href="https://github.com/pmur002/gridgeometry/releases/tag/v0.1-0">version
+    0.1-0</a> of the 'gridGeometry' package, <a
+    href="https://github.com/pmur002/polyclip/releases/tag/v1.91-0">version 1.91-0</a> of the
+    'polyclip' package (a fork to allow for open paths), and the development
+    version of R (revision 76141), which will become R version 3.6.0
+    (for the <code>grobCoords</code> function).
+  </p>
+  <p>
+    This report was generated within a Docker container
+    (see <a href="#Resources">Resources</a> section below).
+  </p>
+
+  <h2><a name="Resources">Resources</a></h2>
+  <ul>
+    <li>
+      The <a href="gridgeometry.cml">raw source file</a> for this
+      report, a <a href="gridgeometry.xml">valid XML</a>
+      transformation of the source file, a <a
+      href="gridgeometry.Rhtml">'knitr' document</a> generated from
+      the XML file, 
+      two <a href="toc.R">R</a> <a href="bib.R">files</a> and
+      the <a href="gridgeometry.bib">bibtex file</a>
+      that are used to generate the table of contents and reference sections,
+      two <a href="common.xsl">XSL</a> <a
+      href="knitr.xsl">files</a> and an 
+      <a href="knit.R">R file</a> that are used to transform the XML to
+      the 'knitr' document, and a <a href="Makefile">Makefile</a> that
+      contains code for the other transformations and coordinates
+      everything.  
+      These materials are also available
+      on <a href="https://github.com/pmur002/gridgeometry-report/releases/tag/v1">github</a>.
+    </li>
+    <li>
+      This report was generated within a 
+      <a href="https://www.docker.com/">Docker</a> container.
+      The Docker command to build the report is included in the Makefile above.
+      The Docker image for the container is available from
+      <a href="https://hub.docker.com/r/pmur002/gridgeometry/">Docker Hub</a>;
+      alternatively, the image can be rebuilt from its 
+      <a href="Dockerfile">Dockerfile</a>.
+    </li>
+  </ul>
+
+  <h2>How to cite this document</h2>
+  <p>
+    Murrell, P. (2019). "A Geometry Engine Interface for 'grid'" 
+    Technical Report 2019-01, Department of Statistics, The University of Auckland. 
+    Version 1.
+    [ <a href="how-to-cite.bib">bib</a> |
+      <a href="http://dx.doi.org/10.17608/k6.auckland.7796831">DOI</a> | 
+      <a href="https://stattech.wordpress.fos.auckland.ac.nz/2019/03/04/2019-01-a-geomet…terface-for-grid/">http</a> ]
+  </p>
+
+  <h2><a name="references">References</a></h2>
+  <ul style="list-style-type: none">
+    <li>
+      <a name="R"/>
+    </li>
+    <li>
+      <a name="pkg:vwline"/>
+    </li>
+    <li>
+      <a name="pkg:jpeg"/>
+    </li>
+    <li>
+      <a name="pkg:polyclip"/>
+    </li>
+    <li>
+      <a name="pkg:ggplot2movies"/>
+    </li>
+    <li>
+      <a name="clipper"/>
+    </li>
+    <li>
+      <a name="pkg:lattice"/>
+    </li>
+    <li>
+      <a name="pkg:gridgeometry"/>
+    </li>
+    <li>
+      <a name="pkg:ggplot2"/>
+    </li>
+    <li>
+      <a name="pkg:eulerr"/>
+    </li>
+    <li>
+      <a name="pkg:subgrplots"/>
+    </li>
+    <li>
+      <a name="pkg:maptools"/>
+    </li>
+    <li>
+      <a name="pkg:deldir"/>
+    </li>
+    <li>
+      <a name="pkg:spatstat"/>
+    </li>
+  </ul>
+
+  <hr/>
+  <p>
+    <a rel="license"
+    href="http://creativecommons.org/licenses/by/4.0/"><img class="CC"
+    alt="Creative Commons License" style="border-width:0"
+    src="https://i.creativecommons.org/l/by/4.0/88x31.png"/></a><br/><span
+    xmlns:dct="http://purl.org/dc/terms/"
+    property="dct:title">This document</span>
+    by <span xmlns:cc="http://creativecommons.org/ns#"
+    property="cc:attributionName">Paul
+    Murrell</span> is licensed under a <a rel="license"
+    href="http://creativecommons.org/licenses/by/4.0/">Creative
+    Commons Attribution 4.0 International License</a>.
+  </p>
+
+  <script><![CDATA[
+  // Use async/await so that PDF files loaded one at a time
+  async function loadPDFs() {
+    var pdfcanvas = document.querySelectorAll("canvas.pdf");
+    var i;
+    for (i=0; i < pdfcanvas.length; i++) {
+        var canvas = pdfcanvas[i];
+        var canvasid = canvas.id;
+        console.log("loop " + canvasid);
+        var pdf = await pdfjsLib.getDocument(canvasid + '.pdf');
+        var page = await pdf.getPage(1);
+        console.log("pdf" + canvasid);
+        var scale = canvas.getAttribute("scale");
+        if (!scale) {
+            scale = 100/72;
+        }
+        var viewport = page.getViewport(scale);
+        var context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        var renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+        page.render(renderContext);
+    }
+  }
+  loadPDFs();
+  ]]>
+  </script>
+
+</body>
+</html>
