@@ -24,7 +24,7 @@ docker:
 
 web:
 	make docker
-	cp -r ../gridgeometry-report/* ~/Web/Reports/HTML/gridgeometry/
+	cp -r ../gridgeometry-report/* ~/Web/Reports/Geometry/gridgeometry/
 
 zip:
 	make docker
