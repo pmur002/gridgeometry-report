@@ -39,10 +39,14 @@
     <a href="http://orcid.org"><img alt="" src="https://www.stat.auckland.ac.nz/~paul/ORCID/ORCiD.png" style="width: 16px; height: 16px; vertical-align: middle" /></a> <span style="font-family: mono; font-size: small"><a href="http://orcid.org/0000-0002-3224-8858">http://orcid.org/0000-0002-3224-8858</a></span>
   </p>
   <p class="date">
-    Version 1:
+    Version 2:
     <rcode echo="FALSE" results="asis">
 cat(format(Sys.Date(), "%A %d %B %Y"))
     </rcode>
+  </p>
+  <p class="date versionHistory">
+    Version 1:  original publication<br/>
+    Version 2:  added mention of 'ggforce' and 'ggraph'
   </p>
 
   <rcode id="init" echo="FALSE" message="FALSE" results="hide">
@@ -1117,6 +1121,13 @@ grid.draw(pb)
     wrap from left-edge to right-edge of map, or vice versa) and 'deldir' 
     (<a href="#pkg:deldir"/>)
     uses 'polyclip' for complex clipping of voronoi tesselations.
+  The 'ggforce' (<a href="#pkg:ggforce"/>) and 
+  'ggraph' (<a href="#pkg:ggraph"/>)
+  packages use 'polyclip' for 
+  tasks very similar to those 
+  demonstrated in this report (cutting edges between nodes and
+  modifying or combining shapes), but provides these facilities
+  as 'ggplot2' extensions rather than at the level of 'grid'.  
     The 'spatstat' package (<a href="#pkg:spatstat"/>) uses 'polyclip'
     for all sorts of things, including polygon offsets, polyline offsets, and
     polygon intersection.  The main difference betweeen 'gridGeometry'
@@ -1244,6 +1255,12 @@ grid.draw(pb)
     </li>
     <li>
       <a name="pkg:spatstat"/>
+    </li>
+    <li>
+      <a name="pkg:ggforce"/>
+    </li>
+    <li>
+      <a name="pkg:ggraph"/>
     </li>
   </ul>
 

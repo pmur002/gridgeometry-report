@@ -104,8 +104,12 @@
       </span>
     </p>
     <p class="date">
-    Version 1:
-Monday 04 March 2019
+    Version 2:
+Monday 11 March 2019
+  </p>
+    <p class="date versionHistory">
+    Version 1:  original publication<br>
+    Version 2:  added mention of 'ggforce' and 'ggraph'
   </p>
 
 
@@ -1320,6 +1324,13 @@ grid.draw(pb)
     wrap from left-edge to right-edge of map, or vice versa) and 'deldir' 
     (<a href="#pkg:deldir">Turner, 2019</a>)
     uses 'polyclip' for complex clipping of voronoi tesselations.
+  The 'ggforce' (<a href="#pkg:ggforce">Pedersen, 2019</a>) and 
+  'ggraph' (<a href="#pkg:ggraph">Pedersen, 2018</a>)
+  packages use 'polyclip' for 
+  tasks very similar to those 
+  demonstrated in this report (cutting edges between nodes and
+  modifying or combining shapes), but provides these facilities
+  as 'ggplot2' extensions rather than at the level of 'grid'.  
     The 'spatstat' package (<a href="#pkg:spatstat">Baddeley et al., 2015</a>) uses 'polyclip'
     for all sorts of things, including polygon offsets, polyline offsets, and
     polygon intersection.  The main difference betweeen 'gridGeometry'
@@ -1522,6 +1533,33 @@ Murrell, P. (2019).
  <em>gridGeometry: Polygon Geometry in grid</em>.
  R package version 0.1-0.
 [ <a href="gridgeometry-bib_bib.html#pkg:gridgeometry">bib</a> ]
+
+</dd>
+
+
+<dt>
+[<a name="pkg:ggraph">Pedersen, 2018</a>]
+</dt>
+<dd>
+Pedersen, T. L. (2018).
+ <em>ggraph: An Implementation of Grammar of Graphics for Graphs and
+  Networks</em>.
+ R package version 1.0.2.
+[ <a href="gridgeometry-bib_bib.html#pkg:ggraph">bib</a> | 
+<a href="https://CRAN.R-project.org/package=ggraph">http</a> ]
+
+</dd>
+
+
+<dt>
+[<a name="pkg:ggforce">Pedersen, 2019</a>]
+</dt>
+<dd>
+Pedersen, T. L. (2019).
+ <em>ggforce: Accelerating 'ggplot2'</em>.
+ R package version 0.2.0.
+[ <a href="gridgeometry-bib_bib.html#pkg:ggforce">bib</a> | 
+<a href="https://CRAN.R-project.org/package=ggforce">http</a> ]
 
 </dd>
 
