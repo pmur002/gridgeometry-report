@@ -42,7 +42,7 @@
       </span>
     </p>
     <p class="date">
-    Version 2:
+    Version 3:
     <rcode echo="FALSE" results="asis"><![CDATA[
 cat(format(Sys.Date(), "%A %d %B %Y"))
     ]]></rcode>
@@ -50,6 +50,7 @@ cat(format(Sys.Date(), "%A %d %B %Y"))
     <p class="date versionHistory">
     Version 1:  original publication<br/>
     Version 2:  added mention of 'ggforce' and 'ggraph'
+    Version 3:  'gridGeometry' now depends on 'polyclip' 1.10-0
   </p>
     <rcode id="init" echo="FALSE" message="FALSE" results="hide"><![CDATA[
 opts_chunk$set(comment=" ", tidy=FALSE)
@@ -246,7 +247,7 @@ grid.draw(p)
     The <code>grid.polyclip</code> function, and the <code>polyclipGrob</code>
     function, allow us to combine grobs using operations supported by the
     <code>polyclip</code> function from the 'polyclip' package 
-    (<a href="#pkg:polyclip">Johnson and Baddeley, 2018</a>)
+    (<a href="#pkg:polyclip">Johnson and Baddeley, 2019</a>)
     (which is an R interface to the C Clipper library; <a href="#clipper">Johnson, 2019</a>).
   </p>
     <p>
@@ -1189,10 +1190,9 @@ grid.draw(pb)
       <a name="requirements">8. Technical requirements</a>
     </h2>
     <p>
-    The examples and discussion in this document relate to <a href="https://github.com/pmur002/gridgeometry/releases/tag/v0.1-0">version
-    0.1-0</a> of the 'gridGeometry' package, <a href="https://github.com/pmur002/polyclip/releases/tag/v1.91-0">version 1.91-0</a> of the
-    'polyclip' package (a fork to allow for open paths), and the development
-    version of R (revision 76141), which will become R version 3.6.0
+    The examples and discussion in this document relate to <a href="https://github.com/pmur002/gridgeometry/releases/tag/v0.2-0">version
+    0.2-0</a> of the 'gridGeometry' package, version 1.10-0 of the
+    'polyclip' package (to allow for open paths), and R version 3.6.0
     (for the <code>grobCoords</code> function).
   </p>
     <p>
@@ -1217,7 +1217,7 @@ grid.draw(pb)
       contains code for the other transformations and coordinates
       everything.  
       These materials are also available
-      on <a href="https://github.com/pmur002/gridgeometry-report/releases/tag/v2">github</a>.
+      on <a href="https://github.com/pmur002/gridgeometry-report/releases/tag/v3">github</a>.
     </li>
       <li>
       This report was generated within a 
@@ -1233,7 +1233,7 @@ grid.draw(pb)
     <p>
     Murrell, P. (2019). "A Geometry Engine Interface for 'grid'" 
     Technical Report 2019-01, Department of Statistics, The University of Auckland. 
-    Version 1.
+    Version 3.
     [ <a href="how-to-cite.bib">bib</a> |
       <a href="http://dx.doi.org/10.17608/k6.auckland.7796831">DOI</a> | 
       <a href="https://stattech.wordpress.fos.auckland.ac.nz/2019/03/04/2019-01-a-geomet…terface-for-grid/">http</a> ]
@@ -1296,15 +1296,14 @@ Johnson, A. (2019).
 
 
 <dt>
-[<a name="pkg:polyclip">Johnson and Baddeley, 2018</a>]
+[<a name="pkg:polyclip">Johnson and Baddeley, 2019</a>]
 </dt>
 <dd>
-Johnson, A. and Baddeley, A. (2018).
+Johnson, A. and Baddeley, A. (2019).
  <em>polyclip: Polygon Clipping</em>.
- http://www.angusj.com/delphi/clipper.php,
-  https://sourceforge.net/projects/polyclipping,
-  https://github.com/baddstats/polyclip.
-[ <a href="gridgeometry-bib_bib.html#pkg:polyclip">bib</a> ]
+ R package version 1.10-0.
+[ <a href="gridgeometry-bib_bib.html#pkg:polyclip">bib</a> | 
+<a href="https://CRAN.R-project.org/package=polyclip">http</a> ]
 
 </dd>
 

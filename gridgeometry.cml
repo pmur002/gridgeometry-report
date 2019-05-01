@@ -39,7 +39,7 @@
     <a href="http://orcid.org"><img alt="" src="https://www.stat.auckland.ac.nz/~paul/ORCID/ORCiD.png" style="width: 16px; height: 16px; vertical-align: middle" /></a> <span style="font-family: mono; font-size: small"><a href="http://orcid.org/0000-0002-3224-8858">http://orcid.org/0000-0002-3224-8858</a></span>
   </p>
   <p class="date">
-    Version 2:
+    Version 3:
     <rcode echo="FALSE" results="asis">
 cat(format(Sys.Date(), "%A %d %B %Y"))
     </rcode>
@@ -47,6 +47,7 @@ cat(format(Sys.Date(), "%A %d %B %Y"))
   <p class="date versionHistory">
     Version 1:  original publication<br/>
     Version 2:  added mention of 'ggforce' and 'ggraph'
+    Version 3:  'gridGeometry' now depends on 'polyclip' 1.10-0
   </p>
 
   <rcode id="init" echo="FALSE" message="FALSE" results="hide">
@@ -1159,11 +1160,9 @@ grid.draw(pb)
   <h2><a name="requirements">Technical requirements</a></h2>
   <p>
     The examples and discussion in this document relate to <a
-    href="https://github.com/pmur002/gridgeometry/releases/tag/v0.1-0">version
-    0.1-0</a> of the 'gridGeometry' package, <a
-    href="https://github.com/pmur002/polyclip/releases/tag/v1.91-0">version 1.91-0</a> of the
-    'polyclip' package (a fork to allow for open paths), and the development
-    version of R (revision 76141), which will become R version 3.6.0
+    href="https://github.com/pmur002/gridgeometry/releases/tag/v0.2-0">version
+    0.2-0</a> of the 'gridGeometry' package, version 1.10-0 of the
+    'polyclip' package (to allow for open paths), and R version 3.6.0
     (for the <code>grobCoords</code> function).
   </p>
   <p>
@@ -1189,7 +1188,7 @@ grid.draw(pb)
       contains code for the other transformations and coordinates
       everything.  
       These materials are also available
-      on <a href="https://github.com/pmur002/gridgeometry-report/releases/tag/v2">github</a>.
+      on <a href="https://github.com/pmur002/gridgeometry-report/releases/tag/v3">github</a>.
     </li>
     <li>
       This report was generated within a 
@@ -1206,7 +1205,7 @@ grid.draw(pb)
   <p>
     Murrell, P. (2019). "A Geometry Engine Interface for 'grid'" 
     Technical Report 2019-01, Department of Statistics, The University of Auckland. 
-    Version 1.
+    Version 3.
     [ <a href="how-to-cite.bib">bib</a> |
       <a href="http://dx.doi.org/10.17608/k6.auckland.7796831">DOI</a> | 
       <a href="https://stattech.wordpress.fos.auckland.ac.nz/2019/03/04/2019-01-a-geomet…terface-for-grid/">http</a> ]

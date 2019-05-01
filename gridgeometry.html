@@ -104,12 +104,13 @@
       </span>
     </p>
     <p class="date">
-    Version 2:
-Monday 11 March 2019
+    Version 3:
+Wednesday 01 May 2019
   </p>
     <p class="date versionHistory">
     Version 1:  original publication<br>
     Version 2:  added mention of 'ggforce' and 'ggraph'
+    Version 3:  'gridGeometry' now depends on 'polyclip' 1.10-0
   </p>
 
 
@@ -177,7 +178,7 @@ Monday 11 March 2019
 
 
 
-<div class="chunk" id="unnamed-chunk-4"><div class="rimage default"><img src="figure/unnamed-chunk-4-1.svg" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" class="plot" /></div></div>
+<div class="chunk" id="unnamed-chunk-4"><div class="rimage default"><img src="figure/unnamed-chunk-4-1.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" class="plot" /></div></div>
     <p>
     To be more specific, the line between the two nodes in the above
     diagram is a Bezier curve that would originate and terminate at the centre
@@ -197,7 +198,7 @@ Monday 11 March 2019
     opaque nodes
     over the top to obscure the intersection of the curve with the nodes.
   </p>
-<div class="chunk" id="unnamed-chunk-5"><div class="rimage default"><img src="figure/unnamed-chunk-5-1.svg" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" class="plot" /></div></div>
+<div class="chunk" id="unnamed-chunk-5"><div class="rimage default"><img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" class="plot" /></div></div>
     <p style="font-size: smaller">
     The photo in the image above is © <a href="https://www.geograph.org.uk/profile/343">Mick Garratt</a>
     (<a href="https://www.geograph.org.uk/photo/1348121">Loch na Leitreach</a>, Sunday,  7 June, 2009,
@@ -254,7 +255,7 @@ Monday 11 March 2019
     (in grey), and the constructed Bezier curve
     (the grey curve minus the nodes).    
   </p>
-<div class="chunk" id="unnamed-chunk-9"><div class="rimage default"><img src="figure/unnamed-chunk-9-1.svg" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" class="plot" /></div></div>
+<div class="chunk" id="unnamed-chunk-9"><div class="rimage default"><img src="figure/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" class="plot" /></div></div>
     <p>
     The next section describes the 'gridGeometry' package in more detail
     and later sections provide some more examples of its use.
@@ -270,7 +271,7 @@ Monday 11 March 2019
     The <code>grid.polyclip</code> function, and the <code>polyclipGrob</code>
     function, allow us to combine grobs using operations supported by the
     <code>polyclip</code> function from the 'polyclip' package 
-    (<a href="#pkg:polyclip">Johnson and Baddeley, 2018</a>)
+    (<a href="#pkg:polyclip">Johnson and Baddeley, 2019</a>)
     (which is an R interface to the C Clipper library; <a href="#clipper">Johnson, 2019</a>).
   </p>
     <p>
@@ -289,25 +290,25 @@ Monday 11 March 2019
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(r, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;intersection&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;grey&quot;</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-11-1.svg" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" class="plot" /></div></div>
 <div class="chunk" id="unnamed-chunk-12"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(r)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(c)</span>
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(r, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;union&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;grey&quot;</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-12-1.svg" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-12-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" class="plot" /></div></div>
 <div class="chunk" id="unnamed-chunk-13"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(r)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(c)</span>
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(r, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;minus&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;grey&quot;</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-13-1.svg" title="plot of chunk unnamed-chunk-13" alt="plot of chunk unnamed-chunk-13" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-13-1.png" title="plot of chunk unnamed-chunk-13" alt="plot of chunk unnamed-chunk-13" class="plot" /></div></div>
 <div class="chunk" id="unnamed-chunk-14"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(r)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(c)</span>
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(r, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;xor&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;grey&quot;</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-14-1.svg" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-14-1.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" class="plot" /></div></div>
     <p>
     The 'gridGeometry' package is based on a fork 
     of the 'polyclip' package that allows these operations to
@@ -327,25 +328,25 @@ Monday 11 March 2019
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(l, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;intersection&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-16-1.svg" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-16-1.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" class="plot" /></div></div>
 <div class="chunk" id="unnamed-chunk-17"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(c)</span>
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(l, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;union&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-17-1.svg" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" class="plot" /></div></div>
 <div class="chunk" id="unnamed-chunk-18"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(c)</span>
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(l, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;minus&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-18-1.svg" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-18-1.png" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" class="plot" /></div></div>
 <div class="chunk" id="unnamed-chunk-19"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(c)</span>
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(l, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;xor&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-19-1.svg" title="plot of chunk unnamed-chunk-19" alt="plot of chunk unnamed-chunk-19" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-19-1.png" title="plot of chunk unnamed-chunk-19" alt="plot of chunk unnamed-chunk-19" class="plot" /></div></div>
     <p>
     The other high-level functions in 'gridGeometry' are
     <code>grid.trim</code> and <code>trimGrob</code>.
@@ -371,7 +372,7 @@ Monday 11 March 2019
 <div class="chunk" id="unnamed-chunk-21"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.trim</span><span class="hl std">(l,</span> <span class="hl num">.2</span><span class="hl std">,</span> <span class="hl num">.8</span><span class="hl std">,</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-21-1.svg" title="plot of chunk unnamed-chunk-21" alt="plot of chunk unnamed-chunk-21" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-21-1.png" title="plot of chunk unnamed-chunk-21" alt="plot of chunk unnamed-chunk-21" class="plot" /></div></div>
     <p>
     Both <code>from</code> and <code>to</code>
     can be vectors, in which case multiple subsets are created.  
@@ -381,7 +382,7 @@ Monday 11 March 2019
 <div class="chunk" id="unnamed-chunk-22"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.trim</span><span class="hl std">(l,</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">.2</span><span class="hl std">,</span> <span class="hl num">.6</span><span class="hl std">),</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">.4</span><span class="hl std">,</span> <span class="hl num">.8</span><span class="hl std">),</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-22-1.svg" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" class="plot" /></div></div>
     <p>
     Both <code>from</code> and <code>to</code>
     can also be negative, in which case the
@@ -392,7 +393,7 @@ Monday 11 March 2019
 <div class="chunk" id="unnamed-chunk-23"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.trim</span><span class="hl std">(l,</span> <span class="hl num">.2</span><span class="hl std">,</span> <span class="hl opt">-</span><span class="hl num">.1</span><span class="hl std">,</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-23-1.svg" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-23-1.png" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" class="plot" /></div></div>
     <p>
     Both <code>from</code> and <code>to</code>
     can be 'grid' units.  In the example below, we create a subset
@@ -402,7 +403,7 @@ Monday 11 March 2019
 <div class="chunk" id="unnamed-chunk-24"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.trim</span><span class="hl std">(l,</span> <span class="hl kwd">unit</span><span class="hl std">(</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl str">&quot;mm&quot;</span><span class="hl std">),</span> <span class="hl kwd">unit</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">,</span> <span class="hl str">&quot;in&quot;</span><span class="hl std">),</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-24-1.svg" title="plot of chunk unnamed-chunk-24" alt="plot of chunk unnamed-chunk-24" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-24-1.png" title="plot of chunk unnamed-chunk-24" alt="plot of chunk unnamed-chunk-24" class="plot" /></div></div>
     <p>
     When <code>from</code> and <code>to</code> are units,
     the "npc" coordinate system represents 0 to 1 along the line.
@@ -415,7 +416,7 @@ Monday 11 March 2019
 <div class="chunk" id="unnamed-chunk-25"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.trim</span><span class="hl std">(l,</span> <span class="hl num">.2</span><span class="hl std">,</span> <span class="hl kwd">unit</span><span class="hl std">(</span><span class="hl num">.5</span><span class="hl std">,</span> <span class="hl str">&quot;npc&quot;</span><span class="hl std">)</span> <span class="hl opt">+</span> <span class="hl kwd">unit</span><span class="hl std">(</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl str">&quot;mm&quot;</span><span class="hl std">),</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-25-1.svg" title="plot of chunk unnamed-chunk-25" alt="plot of chunk unnamed-chunk-25" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-25-1.png" title="plot of chunk unnamed-chunk-25" alt="plot of chunk unnamed-chunk-25" class="plot" /></div></div>
     <p>
     There is also a <code>rep</code> argument that can be used to repeat 
     <code>from</code> and <code>to</code> until the end of the 
@@ -433,7 +434,7 @@ Monday 11 March 2019
 <div class="chunk" id="unnamed-chunk-26"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(l)</span>
 <span class="hl kwd">grid.trim</span><span class="hl std">(l,</span> <span class="hl num">.1</span><span class="hl std">,</span> <span class="hl num">.2</span><span class="hl std">,</span> <span class="hl kwc">rep</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">,</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-26-1.svg" title="plot of chunk unnamed-chunk-26" alt="plot of chunk unnamed-chunk-26" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-26-1.png" title="plot of chunk unnamed-chunk-26" alt="plot of chunk unnamed-chunk-26" class="plot" /></div></div>
     <h2>
       <a name="grobCoords">3. Grob coordinates</a>
     </h2>
@@ -667,7 +668,7 @@ Monday 11 March 2019
 <span class="hl kwd">grid.vwcurve</span><span class="hl std">(cx, cy,</span> <span class="hl kwc">default.units</span><span class="hl std">=</span><span class="hl str">&quot;in&quot;</span><span class="hl std">,</span>
              <span class="hl kwc">w</span><span class="hl std">=</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span> <span class="hl num">1</span><span class="hl std">,</span> <span class="hl kwc">length.out</span><span class="hl std">=</span><span class="hl kwd">length</span><span class="hl std">(cx)))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-34-1.svg" title="plot of chunk unnamed-chunk-34" alt="plot of chunk unnamed-chunk-34" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-34-1.png" title="plot of chunk unnamed-chunk-34" alt="plot of chunk unnamed-chunk-34" class="plot" /></div></div>
     <p>
     The 'gridGeometry' package also defines a generic version
     of the <code>polyclip</code> function, with 
@@ -759,7 +760,7 @@ Monday 11 March 2019
 <span class="hl kwd">grid.lines</span><span class="hl std">(xcoords[[</span><span class="hl num">2</span><span class="hl std">]]</span><span class="hl opt">$</span><span class="hl std">x, xcoords[[</span><span class="hl num">2</span><span class="hl std">]]</span><span class="hl opt">$</span><span class="hl std">y,</span> <span class="hl kwc">default.units</span><span class="hl std">=</span><span class="hl str">&quot;in&quot;</span><span class="hl std">,</span>
            <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">lineend</span><span class="hl std">=</span><span class="hl str">&quot;butt&quot;</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-40-1.svg" title="plot of chunk unnamed-chunk-40" alt="plot of chunk unnamed-chunk-40" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-40-1.png" title="plot of chunk unnamed-chunk-40" alt="plot of chunk unnamed-chunk-40" class="plot" /></div></div>
     <h2>
       <a name="xyList">4. Grobs from coordinates</a>
     </h2>
@@ -825,7 +826,7 @@ Monday 11 March 2019
 <div class="chunk" id="unnamed-chunk-42"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(</span><span class="hl kwd">xyListPolygon</span><span class="hl std">(coords,</span>
                         <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;grey&quot;</span><span class="hl std">)))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-42-1.svg" title="plot of chunk unnamed-chunk-42" alt="plot of chunk unnamed-chunk-42" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-42-1.png" title="plot of chunk unnamed-chunk-42" alt="plot of chunk unnamed-chunk-42" class="plot" /></div></div>
     <p>
     It is important to note that a call to the <code>grobCoords</code> 
     function is when grob coordinates get converted to inches
@@ -848,7 +849,7 @@ Monday 11 March 2019
                         <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">lty</span><span class="hl std">=</span><span class="hl str">&quot;dotted&quot;</span><span class="hl std">)))</span>
 </pre></div>
 </div></div>
-<div class="chunk" id="unnamed-chunk-43"><div class="rimage default"><img src="figure/unnamed-chunk-43-1.svg" title="plot of chunk unnamed-chunk-43" alt="plot of chunk unnamed-chunk-43" class="plot" /></div></div>
+<div class="chunk" id="unnamed-chunk-43"><div class="rimage default"><img src="figure/unnamed-chunk-43-1.png" title="plot of chunk unnamed-chunk-43" alt="plot of chunk unnamed-chunk-43" class="plot" /></div></div>
     <p>
     Next, we push a viewport (in the central quarter of the image)
     and draw the grob and the polygon within this viewport.  This is
@@ -861,7 +862,7 @@ Monday 11 March 2019
                         <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">lty</span><span class="hl std">=</span><span class="hl str">&quot;dotted&quot;</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">)))</span>
 </pre></div>
 </div></div>
-<div class="chunk" id="unnamed-chunk-44"><div class="rimage default"><img src="figure/unnamed-chunk-44-1.svg" title="plot of chunk unnamed-chunk-44" alt="plot of chunk unnamed-chunk-44" class="plot" /></div></div>
+<div class="chunk" id="unnamed-chunk-44"><div class="rimage default"><img src="figure/unnamed-chunk-44-1.png" title="plot of chunk unnamed-chunk-44" alt="plot of chunk unnamed-chunk-44" class="plot" /></div></div>
     <p>
     Finally, we call <code>grobCoords</code> again, this time within
     the new viewport, and now the rectangle (inner grey) and the
@@ -871,7 +872,7 @@ Monday 11 March 2019
                         <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">lty</span><span class="hl std">=</span><span class="hl str">&quot;dotted&quot;</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">)))</span>
 </pre></div>
 </div></div>
-<div class="chunk" id="unnamed-chunk-45"><div class="rimage default"><img src="figure/unnamed-chunk-45-1.svg" title="plot of chunk unnamed-chunk-45" alt="plot of chunk unnamed-chunk-45" class="plot" /></div></div>
+<div class="chunk" id="unnamed-chunk-45"><div class="rimage default"><img src="figure/unnamed-chunk-45-1.png" title="plot of chunk unnamed-chunk-45" alt="plot of chunk unnamed-chunk-45" class="plot" /></div></div>
     <p>
     On the other hand, the <code>grobCoords</code> function automatically
     takes into account any <code>vp</code> setting (and for gTrees any 
@@ -890,7 +891,7 @@ Monday 11 March 2019
 <span class="hl kwd">grid.draw</span><span class="hl std">(</span><span class="hl kwd">xyListPolygon</span><span class="hl std">(</span><span class="hl kwd">grobCoords</span><span class="hl std">(r,</span> <span class="hl kwc">closed</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">),</span>
                         <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">lty</span><span class="hl std">=</span><span class="hl str">&quot;dotted&quot;</span><span class="hl std">)))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-46-1.svg" title="plot of chunk unnamed-chunk-46" alt="plot of chunk unnamed-chunk-46" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-46-1.png" title="plot of chunk unnamed-chunk-46" alt="plot of chunk unnamed-chunk-46" class="plot" /></div></div>
     <p>
     It is also important to note that the coordinates generated by
     <code>grobCoords</code> are "neutral" in the sense that they
@@ -906,7 +907,7 @@ Monday 11 March 2019
                 <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">3</span><span class="hl std">))</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(lg)</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-47-1.svg" title="plot of chunk unnamed-chunk-47" alt="plot of chunk unnamed-chunk-47" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-47-1.png" title="plot of chunk unnamed-chunk-47" alt="plot of chunk unnamed-chunk-47" class="plot" /></div></div>
     <p>
     We can generate coordinates from this line and then 
     a grob from the coordinates and get a filled shape.
@@ -921,7 +922,7 @@ Monday 11 March 2019
 <span class="hl std">lgpath</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">xyListPath</span><span class="hl std">(lgcoords,</span> <span class="hl kwc">rule</span><span class="hl std">=</span><span class="hl str">&quot;evenodd&quot;</span><span class="hl std">,</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;black&quot;</span><span class="hl std">))</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(lgpath)</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-48-1.svg" title="plot of chunk unnamed-chunk-48" alt="plot of chunk unnamed-chunk-48" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-48-1.png" title="plot of chunk unnamed-chunk-48" alt="plot of chunk unnamed-chunk-48" class="plot" /></div></div>
     <p>
     It is also possible
     to dictate how coordinates are interpreted
@@ -944,13 +945,13 @@ Monday 11 March 2019
   </p>
 <div class="chunk" id="unnamed-chunk-50"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(</span><span class="hl kwd">xyListLine</span><span class="hl std">(coords,</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">3</span><span class="hl std">)))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-50-1.svg" title="plot of chunk unnamed-chunk-50" alt="plot of chunk unnamed-chunk-50" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-50-1.png" title="plot of chunk unnamed-chunk-50" alt="plot of chunk unnamed-chunk-50" class="plot" /></div></div>
     <p>
     ... or a closed path ...
   </p>
 <div class="chunk" id="unnamed-chunk-51"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">grid.draw</span><span class="hl std">(</span><span class="hl kwd">xyListPath</span><span class="hl std">(coords,</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;black&quot;</span><span class="hl std">)))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-51-1.svg" title="plot of chunk unnamed-chunk-51" alt="plot of chunk unnamed-chunk-51" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-51-1.png" title="plot of chunk unnamed-chunk-51" alt="plot of chunk unnamed-chunk-51" class="plot" /></div></div>
     <h2>
       <a name="quirks">5. Grobs versus coordinates</a>
     </h2>
@@ -984,7 +985,7 @@ Monday 11 March 2019
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(r, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;minus&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-53-1.svg" title="plot of chunk unnamed-chunk-53" alt="plot of chunk unnamed-chunk-53" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-53-1.png" title="plot of chunk unnamed-chunk-53" alt="plot of chunk unnamed-chunk-53" class="plot" /></div></div>
     <p>
     If we draw the result with the same line thickness as the circle
     and the rectangle, the result looks even worse (it looks like
@@ -996,7 +997,7 @@ Monday 11 March 2019
 <span class="hl kwd">grid.polyclip</span><span class="hl std">(r, c,</span> <span class="hl kwc">op</span><span class="hl std">=</span><span class="hl str">&quot;minus&quot;</span><span class="hl std">,</span>
               <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span> <span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-54-1.svg" title="plot of chunk unnamed-chunk-54" alt="plot of chunk unnamed-chunk-54" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-54-1.png" title="plot of chunk unnamed-chunk-54" alt="plot of chunk unnamed-chunk-54" class="plot" /></div></div>
     <p>
     If we actually want to subtract the outline of the drawn border of the
     circle, we need coordinates that describe that outline.
@@ -1031,7 +1032,7 @@ Monday 11 March 2019
 <span class="hl kwd">grid.draw</span><span class="hl std">(vwc)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(result)</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-56-1.svg" title="plot of chunk unnamed-chunk-56" alt="plot of chunk unnamed-chunk-56" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-56-1.png" title="plot of chunk unnamed-chunk-56" alt="plot of chunk unnamed-chunk-56" class="plot" /></div></div>
     <!--
   <rcode fig.width="2" fig.height="2" dev.args="list(bg='transparent')"><![CDATA[
 rc <- grobCoords(r, closed=TRUE)[[1]]
@@ -1084,7 +1085,7 @@ grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
 <span class="hl kwd">grid.draw</span><span class="hl std">(c)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(p)</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-57-1.svg" title="plot of chunk unnamed-chunk-57" alt="plot of chunk unnamed-chunk-57" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-57-1.png" title="plot of chunk unnamed-chunk-57" alt="plot of chunk unnamed-chunk-57" class="plot" /></div></div>
     <p>
     The next example shows a similar construction, but in a larger context
     (at the risk of inviting the attention of the chart-junk police).
@@ -1129,7 +1130,7 @@ grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
              <span class="hl kwd">filmstrip</span><span class="hl std">(x, y, ...)</span>
          <span class="hl std">})</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-58-1.svg" title="plot of chunk unnamed-chunk-58" alt="plot of chunk unnamed-chunk-58" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-58-1.png" title="plot of chunk unnamed-chunk-58" alt="plot of chunk unnamed-chunk-58" class="plot" /></div></div>
     <p>
     The next example demonstrates an application of the <code>trim</code>
     function.  To motivate the problem, we first draw a Bezier curve
@@ -1140,7 +1141,7 @@ grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
 <span class="hl kwd">grid.bezier</span><span class="hl std">(x, y,</span> <span class="hl kwc">gp</span><span class="hl std">=</span><span class="hl kwd">gpar</span><span class="hl std">(</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl num">NA</span><span class="hl std">),</span>
             <span class="hl kwc">arrow</span><span class="hl std">=</span><span class="hl kwd">arrow</span><span class="hl std">(</span><span class="hl kwc">angle</span><span class="hl std">=</span><span class="hl num">20</span><span class="hl std">,</span> <span class="hl kwc">length</span><span class="hl std">=</span><span class="hl kwd">unit</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl std">,</span> <span class="hl str">&quot;cm&quot;</span><span class="hl std">),</span> <span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;closed&quot;</span><span class="hl std">))</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-59-1.svg" title="plot of chunk unnamed-chunk-59" alt="plot of chunk unnamed-chunk-59" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-59-1.png" title="plot of chunk unnamed-chunk-59" alt="plot of chunk unnamed-chunk-59" class="plot" /></div></div>
     <p>
     There are two problems with the result above:  the arrow head
     is drawn with the same graphical parameters as the line, so
@@ -1164,7 +1165,7 @@ grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
              <span class="hl kwc">to</span><span class="hl std">=</span><span class="hl kwd">unit</span><span class="hl std">(</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl opt">-</span><span class="hl num">12</span><span class="hl std">,</span> <span class="hl num">0</span><span class="hl std">),</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;mm&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;mm&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;npc&quot;</span><span class="hl std">)))</span>
 </pre></div>
 </div></div>
-<div class="chunk" id="unnamed-chunk-61"><div class="rimage default"><img src="figure/unnamed-chunk-61-1.svg" title="plot of chunk unnamed-chunk-61" alt="plot of chunk unnamed-chunk-61" class="plot" /></div></div>
+<div class="chunk" id="unnamed-chunk-61"><div class="rimage default"><img src="figure/unnamed-chunk-61-1.png" title="plot of chunk unnamed-chunk-61" alt="plot of chunk unnamed-chunk-61" class="plot" /></div></div>
     <p>
     Now we can draw most of the curve as a normal line and then
     add a variable-width line 
@@ -1178,7 +1179,7 @@ grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
 <span class="hl kwd">grid.draw</span><span class="hl std">(line)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(arrow)</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-62-1.svg" title="plot of chunk unnamed-chunk-62" alt="plot of chunk unnamed-chunk-62" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-62-1.png" title="plot of chunk unnamed-chunk-62" alt="plot of chunk unnamed-chunk-62" class="plot" /></div></div>
     <p>
     The following code takes this a step further and adds in a bit
     of constructive geometry.  This time we draw all but the last
@@ -1202,7 +1203,7 @@ grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
 <span class="hl kwd">grid.draw</span><span class="hl std">(arrow1)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(arrow2)</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-63-1.svg" title="plot of chunk unnamed-chunk-63" alt="plot of chunk unnamed-chunk-63" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-63-1.png" title="plot of chunk unnamed-chunk-63" alt="plot of chunk unnamed-chunk-63" class="plot" /></div></div>
     <p>
     We construct a final arrow head by subtracting one variable-width
     line from the other to produce a curve with a notched arrow head 
@@ -1213,7 +1214,7 @@ grid.polyclip(vwr, c, "minus", gp=gpar(col="red", fill="red"))
 <span class="hl kwd">grid.draw</span><span class="hl std">(line)</span>
 <span class="hl kwd">grid.draw</span><span class="hl std">(arrow)</span>
 </pre></div>
-</div><div class="rimage default"><img src="figure/unnamed-chunk-64-1.svg" title="plot of chunk unnamed-chunk-64" alt="plot of chunk unnamed-chunk-64" class="plot" /></div></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-64-1.png" title="plot of chunk unnamed-chunk-64" alt="plot of chunk unnamed-chunk-64" class="plot" /></div></div>
     <p>
     That may seem like a lot of work, but because it is code-based, 
     this approach could easily be wrapped into a function to simplify
@@ -1362,10 +1363,9 @@ grid.draw(pb)
       <a name="requirements">8. Technical requirements</a>
     </h2>
     <p>
-    The examples and discussion in this document relate to <a href="https://github.com/pmur002/gridgeometry/releases/tag/v0.1-0">version
-    0.1-0</a> of the 'gridGeometry' package, <a href="https://github.com/pmur002/polyclip/releases/tag/v1.91-0">version 1.91-0</a> of the
-    'polyclip' package (a fork to allow for open paths), and the development
-    version of R (revision 76141), which will become R version 3.6.0
+    The examples and discussion in this document relate to <a href="https://github.com/pmur002/gridgeometry/releases/tag/v0.2-0">version
+    0.2-0</a> of the 'gridGeometry' package, version 1.10-0 of the
+    'polyclip' package (to allow for open paths), and R version 3.6.0
     (for the <code>grobCoords</code> function).
   </p>
     <p>
@@ -1390,7 +1390,7 @@ grid.draw(pb)
       contains code for the other transformations and coordinates
       everything.  
       These materials are also available
-      on <a href="https://github.com/pmur002/gridgeometry-report/releases/tag/v2">github</a>.
+      on <a href="https://github.com/pmur002/gridgeometry-report/releases/tag/v3">github</a>.
     </li>
       <li>
       This report was generated within a 
@@ -1406,7 +1406,7 @@ grid.draw(pb)
     <p>
     Murrell, P. (2019). "A Geometry Engine Interface for 'grid'" 
     Technical Report 2019-01, Department of Statistics, The University of Auckland. 
-    Version 1.
+    Version 3.
     [ <a href="how-to-cite.bib">bib</a> |
       <a href="http://dx.doi.org/10.17608/k6.auckland.7796831">DOI</a> | 
       <a href="https://stattech.wordpress.fos.auckland.ac.nz/2019/03/04/2019-01-a-geomet%E2%80%A6terface-for-grid/">http</a> ]
@@ -1470,15 +1470,14 @@ Johnson, A. (2019).
 
 
 <dt>
-[<a name="pkg:polyclip">Johnson and Baddeley, 2018</a>]
+[<a name="pkg:polyclip">Johnson and Baddeley, 2019</a>]
 </dt>
 <dd>
-Johnson, A. and Baddeley, A. (2018).
+Johnson, A. and Baddeley, A. (2019).
  <em>polyclip: Polygon Clipping</em>.
- http://www.angusj.com/delphi/clipper.php,
-  https://sourceforge.net/projects/polyclipping,
-  https://github.com/baddstats/polyclip.
-[ <a href="gridgeometry-bib_bib.html#pkg:polyclip">bib</a> ]
+ R package version 1.10-0.
+[ <a href="gridgeometry-bib_bib.html#pkg:polyclip">bib</a> | 
+<a href="https://CRAN.R-project.org/package=polyclip">http</a> ]
 
 </dd>
 
