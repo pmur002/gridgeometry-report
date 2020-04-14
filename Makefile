@@ -19,7 +19,6 @@ Rscript = Rscript
 	$(Rscript) knit.R $*.Rhtml
 
 docker:
-	# Special ./make-report shell script to bring up Xvfb
 	sudo docker run -v $(shell pwd):/home/work/ -w /home/work --rm pmur002/gridgeometry make gridgeometry.html
 
 web:
